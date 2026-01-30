@@ -1,12 +1,11 @@
-
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
-
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
+
     constructor(private authService: AuthService) {
         super();
     }
@@ -14,12 +13,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     async validate(username: string, password: string): Promise<any> {
         const user = await this.authService.validateUser(username, password);
         if (!user) {
-            throw new UnauthorizedException("Username or password is incorrect");
+            throw new UnauthorizedException("Username/Password không hợp lệ.");
         }
         if (user.isActive === false) {
-            throw new BadRequestException("Your account is not activated. Please check your email to activate your account.");
-        } 
-
+            throw new BadRequestException("Tài khoản chưa được kích hoạt");
+        }
         return user;
     }
 }

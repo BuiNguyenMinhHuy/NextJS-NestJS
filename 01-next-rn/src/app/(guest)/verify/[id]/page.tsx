@@ -1,17 +1,15 @@
 import Verify from "@/components/auth/verify";
 
-const verifyPage = async ({
-    params,
-}: {
-    params: Promise<{ id: string }>
-}) => {
-    const { id } = await params;
+const VerifyPage = ({ params }: { params: { id: string } }) => {
+    const { id } = params;
+
     return (
         <>
-            <Verify id={id}
-
+            <Verify
+                id={id}
             />
         </>
     )
 }
-export default verifyPage;
+
+export default VerifyPage;

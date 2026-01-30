@@ -1,13 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './passport/local-auth.guard';
-import { JwtAuthGuard } from './passport/jwt-auth.guard';
 import { Public, ResponseMessage } from '@/decorator/customize';
+import { ChangePasswordAuthDto, CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
-
 
 @Controller('auth')
 export class AuthController {
@@ -16,41 +12,44 @@ export class AuthController {
     private readonly mailerService: MailerService
   ) { }
 
-
   @Post("login")
   @Public()
   @UseGuards(LocalAuthGuard)
-  @ResponseMessage("Fetch login successfully")
+  @ResponseMessage("Fetch login")
   handleLogin(@Request() req) {
     return this.authService.login(req.user);
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('profile')
-  // getProfile(@Request() req) {
-  //   return req.user;
-  // }
-  @Public()
   @Post('register')
+  @Public()
   register(@Body() registerDto: CreateAuthDto) {
     return this.authService.handleRegister(registerDto);
   }
 
-  @Public()
   @Post('check-code')
+  @Public()
   checkCode(@Body() registerDto: CodeAuthDto) {
     return this.authService.checkCode(registerDto);
   }
 
-  @Public()
   @Post('retry-active')
+  @Public()
   retryActive(@Body("email") email: string) {
     return this.authService.retryActive(email);
   }
 
   @Post('retry-password')
+  @Public()
   retryPassword(@Body("email") email: string) {
     return this.authService.retryPassword(email);
+  }
+
+
+
+  @Post('change-password')
+  @Public()
+  changePassword(@Body() data: ChangePasswordAuthDto) {
+    return this.authService.changePassword(data);
   }
   @Get('mail')
   @Public()
@@ -60,13 +59,12 @@ export class AuthController {
         to: 'bnmhuy2707@gmail.com', // list of receivers
         subject: 'Testing Nest MailerModule ✔', // Subject line
         text: 'welcome', // plaintext body
-        //html: '<b>hello with webdemo</b>', // HTML body content
         template: "register",
         context: {
           name: "Huy",
-          activationCode: 123456
+          activationCode: 123456789
         }
       })
-    return "OK"
+    return "ok";
   }
 }

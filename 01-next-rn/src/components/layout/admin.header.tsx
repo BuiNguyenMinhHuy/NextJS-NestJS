@@ -6,12 +6,11 @@ import { useContext } from 'react';
 import { DownOutlined, SmileOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
-import { useSession } from 'next-auth/react';
+import { useSession } from "next-auth/react"
 import { signOut } from "next-auth/react"
 
-
 const AdminHeader = (props: any) => {
-    //const { data: session, status } = useSession();
+    // const { data: session, status } = useSession();
     const { session } = props;
 
     const { Header } = Layout;
@@ -22,7 +21,7 @@ const AdminHeader = (props: any) => {
             key: '1',
             label: (
                 <span>
-                    Setting
+                    Settings
                 </span>
             ),
         },
@@ -30,7 +29,7 @@ const AdminHeader = (props: any) => {
         {
             key: '4',
             danger: true,
-            label: <span onClick={() => signOut()}>Logout</span>,
+            label: <span onClick={() => signOut()}>Đăng xuất</span>,
         },
     ];
 
@@ -60,7 +59,7 @@ const AdminHeader = (props: any) => {
                         style={{ color: "unset", lineHeight: "0 !important", marginRight: 20 }}
                     >
                         <Space>
-                            Welcome {session?.user?.name ?? ""}
+                            Welcome {session?.user?.email ?? ""}
                             <DownOutlined />
                         </Space>
                     </a>

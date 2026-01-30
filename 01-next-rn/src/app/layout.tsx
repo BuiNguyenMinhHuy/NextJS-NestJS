@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 import '@/app/globals.css';
-import NextAuth from "next-auth";
 import NextAuthWrapper from "@/library/next.auth.wrapper";
 
 const inter = Inter({ subsets: ["latin"] });

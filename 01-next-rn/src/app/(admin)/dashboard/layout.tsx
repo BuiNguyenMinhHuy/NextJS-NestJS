@@ -10,7 +10,9 @@ const AdminLayout = async ({
 }: Readonly<{
     children: React.ReactNode;
 }>) => {
+
     const session = await auth()
+
     return (
         <AdminContextProvider>
             <div style={{ display: "flex" }}>
