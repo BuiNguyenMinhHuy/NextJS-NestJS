@@ -1,7 +1,7 @@
 
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 
 
@@ -16,6 +16,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         if (!user) {
             throw new UnauthorizedException("Username or password is incorrect");
         }
+        if (user.isActive === false) {
+            throw new BadRequestException("Your account is not activated. Please check your email to activate your account.");
+        } 
+
         return user;
     }
 }
