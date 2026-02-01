@@ -31,8 +31,8 @@ import { TransformInterceptor } from '@/core/transform.interceptor';
     RestaurantsModule,
     ReviewsModule,
     AuthModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRootAsync({
+    ConfigModule.forRoot({ isGlobal: true }), // Load .env file and make ConfigService available globally
+    MongooseModule.forRootAsync({ // Connect to MongoDB asynchronously using ConfigService
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
@@ -73,11 +73,11 @@ import { TransformInterceptor } from '@/core/transform.interceptor';
   providers: [
     AppService,
     {
-      provide: APP_GUARD,
+      provide: APP_GUARD, // Apply JwtAuthGuard globally  
       useClass: JwtAuthGuard,
     },
     {
-      provide: APP_INTERCEPTOR,
+      provide: APP_INTERCEPTOR, // dong goi interceptor toan cuc
       useClass: TransformInterceptor,
     }
   ],

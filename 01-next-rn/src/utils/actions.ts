@@ -78,3 +78,108 @@ export const handleDeleteUserAction = async (id: any) => {
     revalidateTag("list-users")
     return res;
 }
+
+export const handleCreateRestaurantAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/restaurants`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+        body: { ...data }
+    })
+    revalidateTag("list-restaurants");
+    return res;
+}
+// src/utils/actions.ts
+export const handleUpdateRestaurantAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/restaurants`,
+        method: "PATCH", // ĐỔI TỪ POST THÀNH PATCH
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+        body: { ...data }
+    })
+    revalidateTag("list-restaurants");
+    return res;
+}
+
+export const handleDeleteRestaurantAction = async (id: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/restaurants/${id}`,
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+    })
+    revalidateTag("list-restaurants");
+    return res;
+}
+
+export const handleCreateMenuAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/menus`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+        body: { ...data }
+    })
+    revalidateTag("list-menus");
+    return res;
+}
+
+export const handleUpdateMenuAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/menus`,
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+        body: { ...data }
+    })
+    revalidateTag("list-menus");
+    return res;
+}
+
+export const handleDeleteMenuAction = async (id: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/menus/${id}`,
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+    })
+    revalidateTag("list-menus");
+    return res;
+}
+
+export const handleCreateMenuItemAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/menu-items`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+        body: { ...data }
+    })
+    revalidateTag("list-menu-items");
+    return res;
+}
+
+export const handleUpdateMenuItemAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/menu-items`,
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+        body: { ...data }
+    })
+    revalidateTag("list-menu-items");
+    return res;
+}
+
+export const handleDeleteMenuItemAction = async (id: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/menu-items/${id}`,
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+    })
+    revalidateTag("list-menu-items");
+    return res;
+}

@@ -18,7 +18,7 @@ export class Restaurant {
     @Prop()
     email: string;
 
-    @Prop()
+    @Prop({ default: 0 })
     rating: number;
 
 }

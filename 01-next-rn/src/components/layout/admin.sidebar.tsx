@@ -6,6 +6,9 @@ import {
     MailOutlined,
     SettingOutlined,
     TeamOutlined,
+    ShopOutlined,
+    MenuOutlined,
+    CoffeeOutlined
 
 } from '@ant-design/icons';
 import React, { useContext } from 'react';
@@ -30,10 +33,27 @@ const AdminSideBar = () => {
                     label: <Link href={"/dashboard"}>Dashboard</Link>,
                     icon: <AppstoreOutlined />,
                 },
+
                 {
                     key: "users",
                     label: <Link href={"/dashboard/user"}>Manage Users</Link>,
                     icon: <TeamOutlined />,
+                },
+                {
+                    key: "restaurants",
+                    label: <Link href={"/dashboard/restaurant"}>Manage Restaurants</Link>,
+                    icon: <ShopOutlined />,
+                },
+                {
+                    key: "menus",
+                    label: <Link href={"/dashboard/menu"}>Manage Menus</Link>,
+                    icon: <MenuOutlined />,
+                },
+
+                {
+                    key: "menu-items",
+                    label: <Link href={"/dashboard/product"}>Manage Menu Items</Link>,
+                    icon: <CoffeeOutlined />,
                 },
                 {
                     key: 'sub1',
