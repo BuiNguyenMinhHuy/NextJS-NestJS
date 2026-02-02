@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { RestaurantsService } from './restaurants.service';
 import { CreateRestaurantDto } from './dto/create-restaurant.dto';
 import { UpdateRestaurantDto } from './dto/update-restaurant.dto';
+import { Public } from '@/decorator/customize';
 
 @Controller('restaurants')
 export class RestaurantsController {
@@ -13,6 +14,7 @@ export class RestaurantsController {
   }
 
   @Get()
+  @Public()
   async findAll(
     @Query() query: string,
     @Query("current") current: string,

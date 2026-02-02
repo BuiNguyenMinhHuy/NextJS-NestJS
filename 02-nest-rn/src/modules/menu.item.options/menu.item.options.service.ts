@@ -1,26 +1,58 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateMenuItemOptionDto } from './dto/create-menu.item.option.dto';
 import { UpdateMenuItemOptionDto } from './dto/update-menu.item.option.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { MenuItemOption } from './schemas/menu.item.option.schema';
+import { Model } from 'mongoose';
+import aqp from 'api-query-params';
+import mongoose from 'mongoose';
 
 @Injectable()
 export class MenuItemOptionsService {
-  create(createMenuItemOptionDto: CreateMenuItemOptionDto) {
-    return 'This action adds a new menuItemOption';
+  constructor(
+    @InjectModel(MenuItemOption.name)
+    private menuItemOptionModel: Model<MenuItemOption>
+  ) { }
+
+  async create(createMenuItemOptionDto: CreateMenuItemOptionDto) {
+    return await this.menuItemOptionModel.create({ ...createMenuItemOptionDto });
   }
 
-  findAll() {
-    return `This action returns all menuItemOptions`;
+  async findAll(query: any, current: number, pageSize: number) {
+    const { filter, sort } = aqp(query);
+    if (filter.current) delete filter.current;
+    if (filter.pageSize) delete filter.pageSize;
+
+    if (!current) current = 1;
+    if (!pageSize) pageSize = 10;
+
+    const totalItems = (await this.menuItemOptionModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+    const skip = (current - 1) * (pageSize);
+
+    const results = await this.menuItemOptionModel
+      .find(filter)
+      .limit(pageSize)
+      .skip(skip)
+      .sort(sort as any)
+      .populate('menuItem', 'title'); // Lấy tên món ăn để hiển thị
+
+    return {
+      meta: { current, pageSize, pages: totalPages, total: totalItems },
+      results
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} menuItemOption`;
+  async update(updateMenuItemOptionDto: UpdateMenuItemOptionDto) {
+    return await this.menuItemOptionModel.updateOne(
+      { _id: updateMenuItemOptionDto._id }, { ...updateMenuItemOptionDto }
+    );
   }
 
-  update(id: number, updateMenuItemOptionDto: UpdateMenuItemOptionDto) {
-    return `This action updates a #${id} menuItemOption`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} menuItemOption`;
+  async remove(_id: string) {
+    if (mongoose.isValidObjectId(_id)) {
+      return this.menuItemOptionModel.deleteOne({ _id });
+    }
+    throw new BadRequestException("Id không đúng định dạng");
   }
 }

@@ -8,7 +8,8 @@ import {
     TeamOutlined,
     ShopOutlined,
     MenuOutlined,
-    CoffeeOutlined
+    CoffeeOutlined,
+    PlusSquareOutlined
 
 } from '@ant-design/icons';
 import React, { useContext } from 'react';
@@ -25,7 +26,11 @@ const AdminSideBar = () => {
 
         {
             key: 'grp',
-            label: 'Web Demo',
+            label: (
+                <Link href="/" style={{ color: 'inherit', textDecoration: 'none', fontWeight: 'bold' }}>
+                    WEB DEMO
+                </Link>
+            ),
             type: 'group',
             children: [
                 {
@@ -54,6 +59,12 @@ const AdminSideBar = () => {
                     key: "menu-items",
                     label: <Link href={"/dashboard/product"}>Manage Menu Items</Link>,
                     icon: <CoffeeOutlined />,
+                },
+
+                {
+                    key: "menu-item-options",
+                    label: <Link href={"/dashboard/menu-item-options"}>Menu Item Options</Link>,
+                    icon: <PlusSquareOutlined />,
                 },
                 {
                     key: 'sub1',

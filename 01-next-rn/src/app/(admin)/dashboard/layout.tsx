@@ -4,6 +4,8 @@ import AdminFooter from '@/components/layout/admin.footer';
 import AdminHeader from '@/components/layout/admin.header';
 import AdminSideBar from '@/components/layout/admin.sidebar';
 import { AdminContextProvider } from '@/library/admin.context';
+import { redirect } from 'next/navigation';
+
 
 const AdminLayout = async ({
     children,
@@ -12,7 +14,9 @@ const AdminLayout = async ({
 }>) => {
 
     const session = await auth()
-
+    if (session?.user?.role !== 'ADMINS') {
+        redirect("/");
+    }
     return (
         <AdminContextProvider>
             <div style={{ display: "flex" }}>
