@@ -31,7 +31,7 @@ const UserCreate = (props: IProps) => {
             message.success("Create succeed!")
         } else {
             notification.error({
-                message: "Create User error",
+                title: "Create User error",
                 description: res?.message
             })
         }

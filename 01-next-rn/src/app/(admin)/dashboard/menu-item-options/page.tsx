@@ -4,12 +4,13 @@ import MenuItemOptionTable from "@/components/admin/menu-item-options.table";
 import { sendRequest } from "@/utils/api";
 
 interface IProps {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const ManageMenuItemOptionPage = async (props: IProps) => {
-    const current = props?.searchParams?.current ?? 1;
-    const pageSize = props?.searchParams?.pageSize ?? 10;
+    const searchParams = await props.searchParams;
+    const current = searchParams?.current ?? 1;
+    const pageSize = searchParams?.pageSize ?? 10;
     const session = await auth();
 
     // Fetch đồng thời Menu Item Options và danh sách Menu Items

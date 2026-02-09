@@ -1,20 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Request } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
-
+import { ResponseMessage } from '@/decorator/customize';
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(private readonly ordersService: OrdersService) { }
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersService.create(createOrderDto);
+  @ResponseMessage("Đặt hàng thành công")
+  create(@Body() createOrderDto: CreateOrderDto, @Request() req: any) {
+    return this.ordersService.create(createOrderDto, req.user);
   }
 
+
   @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  @ResponseMessage("Lấy danh sách đơn hàng thành công")
+  async findAll(
+    @Query() query: string,
+    @Query("current") current: string,
+    @Query("pageSize") pageSize: string,
+    @Request() req: any // Lấy thông tin user từ Access Token
+  ) {
+    return this.ordersService.findAll(query, +current, +pageSize, req.user);
   }
 
   @Get(':id')
@@ -31,4 +39,6 @@ export class OrdersController {
   remove(@Param('id') id: string) {
     return this.ordersService.remove(+id);
   }
+
+
 }

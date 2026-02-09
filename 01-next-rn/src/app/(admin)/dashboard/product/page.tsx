@@ -4,12 +4,14 @@ import MenuItemTable from "@/components/admin/menu-item.table";
 import { sendRequest } from "@/utils/api";
 
 interface IProps {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const ManageProductPage = async (props: IProps) => {
-    const current = props?.searchParams?.current ?? 1;
-    const pageSize = props?.searchParams?.pageSize ?? 10;
+    const searchParams = await props.searchParams;
+
+    const current = searchParams?.current ?? 1;
+    const pageSize = searchParams?.pageSize ?? 10;
     const session = await auth();
 
     // Fetch đồng thời Menu Items và danh sách Menus

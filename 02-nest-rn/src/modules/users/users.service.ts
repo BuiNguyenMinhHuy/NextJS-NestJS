@@ -1,17 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schemas/user.schema';
 import { Model, mongo } from 'mongoose';
-import { hashPasswordHelper } from '@/helpers/util';
+import { comparePasswordHelper, hashPasswordHelper } from '@/helpers/util';
 import aqp from 'api-query-params';
 import mongoose from 'mongoose';
 import { ChangePasswordAuthDto, CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
-
 @Injectable()
 export class UsersService {
 
@@ -78,8 +77,11 @@ export class UsersService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(_id: string) {
+    if (mongoose.isValidObjectId(_id)) {
+      return await this.userModel.findById(_id).select("-password"); // Không lấy password
+    }
+    throw new BadRequestException("Id không đúng định dạng");
   }
 
   async findByEmail(email: string) {
@@ -253,5 +255,27 @@ export class UsersService {
     }
 
   }
+  async changePasswordAuthenticated(user: any, data: ChangePasswordDto) {
+    const { oldPassword, newPassword, confirmPassword } = data;
 
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException("Mật khẩu mới và xác nhận mật khẩu không chính xác.");
+    }
+
+    // Tìm user trong DB để lấy password hash
+    const currentUser = await this.userModel.findById(user._id);
+
+    // So sánh mật khẩu cũ
+    const isPasswordValid = await comparePasswordHelper(oldPassword, currentUser.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException("Mật khẩu cũ không chính xác.");
+    }
+
+    // Hash mật khẩu mới và cập nhật
+    const hashPassword = await hashPasswordHelper(newPassword);
+    return await this.userModel.updateOne(
+      { _id: user._id },
+      { password: hashPassword }
+    );
+  }
 }

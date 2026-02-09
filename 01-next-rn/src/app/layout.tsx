@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AntdRegistry } from '@ant-design/nextjs-registry';
-
+import { CartProvider } from "@/library/cart.context";
 import '@/app/globals.css';
 import NextAuthWrapper from "@/library/next.auth.wrapper";
 
@@ -19,11 +19,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning>
         <AntdRegistry>
-          <NextAuthWrapper>
-            {children}
-          </NextAuthWrapper>
+          <CartProvider>
+            <NextAuthWrapper>
+              {children}
+            </NextAuthWrapper>
+          </CartProvider>
         </AntdRegistry>
 
       </body>

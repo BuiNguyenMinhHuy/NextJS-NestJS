@@ -39,7 +39,7 @@ const MenuItemTable = (props: IProps) => {
         {
             title: 'Giá (VND)',
             dataIndex: 'basePrice',
-            render: (value: any) => <>{new Intl.NumberFormat().format(value)}</>
+            render: (value: any) => <>{new Intl.NumberFormat('vi-VN').format(value)}</>
         },
         {
             title: 'Thuộc Menu',

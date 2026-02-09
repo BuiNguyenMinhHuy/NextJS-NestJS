@@ -25,7 +25,7 @@ const Verify = (props: any) => {
             router.push(`/auth/login`);
         } else {
             notification.error({
-                message: "Verify error",
+                title: "Verify error",
                 description: res?.message
             })
         }

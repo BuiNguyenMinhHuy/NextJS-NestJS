@@ -3,6 +3,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { MenuItemsService } from './menu.items.service';
 import { CreateMenuItemDto } from './dto/create-menu.item.dto';
 import { UpdateMenuItemDto } from './dto/update-menu.item.dto';
+import { Public } from '@/decorator/customize';
 
 @Controller('menu-items')
 export class MenuItemsController {
@@ -14,6 +15,7 @@ export class MenuItemsController {
   }
 
   @Get()
+  @Public()
   async findAll(
     @Query() query: string,
     @Query("current") current: string,

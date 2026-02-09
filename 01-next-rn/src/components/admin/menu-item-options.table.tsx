@@ -41,7 +41,7 @@ const MenuItemOptionTable = (props: IProps) => {
         {
             title: 'Giá thêm (VND)',
             dataIndex: 'additionalPrice',
-            render: (value: any) => <>{new Intl.NumberFormat().format(value)}</>
+            render: (value: any) => <>{new Intl.NumberFormat('vi-VN').format(value)}</>
         },
         { title: 'Loại', dataIndex: 'optionalDescription' },
         {

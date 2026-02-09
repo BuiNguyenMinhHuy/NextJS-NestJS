@@ -32,7 +32,7 @@ const ModalChangePassword = (props: any) => {
             setCurrent(1);
         } else {
             notification.error({
-                message: "Call APIs error",
+                title: "Call APIs error",
                 description: res?.message
             })
         }
@@ -43,7 +43,7 @@ const ModalChangePassword = (props: any) => {
         const { code, password, confirmPassword } = values;
         if (password !== confirmPassword) {
             notification.error({
-                message: "Invalid input",
+                title: "Invalid input",
                 description: "Mật khẩu và xác nhận mật khẩu không chính xác"
             })
             return;
@@ -60,7 +60,7 @@ const ModalChangePassword = (props: any) => {
             setCurrent(2);
         } else {
             notification.error({
-                message: "Call APIs error",
+                title: "Call APIs error",
                 description: res?.message
             })
         }

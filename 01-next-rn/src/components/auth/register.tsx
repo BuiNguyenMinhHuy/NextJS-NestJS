@@ -1,13 +1,33 @@
 'use client'
-import React from 'react';
+import React, { useActionState, useEffect } from 'react';
 import { Button, Col, Divider, Form, Input, notification, Row } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { sendRequest } from '@/utils/api';
 import { useRouter } from 'next/navigation';
+import { handleRegisterAction } from '@/utils/actions';
 
 const Register = () => {
     const router = useRouter()
+
+    const [state, formAction, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+        const email = formData.get('email');
+        const password = formData.get('password');
+        const name = formData.get('name');
+
+        const res = await handleRegisterAction({ email, password, name });
+        if (res?.data) {
+            router.push(`/verify/${res?.data?._id}`);
+            return null;
+        }
+        return { error: res?.message };
+    }, null);
+
+    useEffect(() => {
+        if (state?.error) {
+            notification.error({ message: "Lỗi đăng ký", description: state.error });
+        }
+    }, [state]);
 
     const onFinish = async (values: any) => {
         const { email, password, name } = values;
@@ -22,7 +42,7 @@ const Register = () => {
             router.push(`/verify/${res?.data?._id}`);
         } else {
             notification.error({
-                message: "Register error",
+                title: "Register error",
                 description: res?.message
             })
         }
@@ -38,52 +58,32 @@ const Register = () => {
                     borderRadius: "5px"
                 }}>
                     <legend>Đăng Ký Tài Khoản</legend>
-                    <Form
-                        name="basic"
-                        onFinish={onFinish}
-                        autoComplete="off"
-                        layout='vertical'
-                    >
-                        <Form.Item
-                            label="Email"
-                            name="email"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input your email!',
-                                },
-                            ]}
-                        >
-                            <Input />
-                        </Form.Item>
+                    <form action={formAction}>
+                        <div style={{ marginBottom: 15 }}>
+                            <label>Email:</label>
+                            <Input name="email" required placeholder="Nhập email của bạn" />
+                        </div>
 
-                        <Form.Item
-                            label="Password"
-                            name="password"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input your password!',
-                                },
-                            ]}
-                        >
-                            <Input.Password />
-                        </Form.Item>
+                        <div style={{ marginBottom: 15 }}>
+                            <label>Mật khẩu:</label>
+                            <Input.Password name="password" required placeholder="Nhập mật khẩu" />
+                        </div>
 
-                        <Form.Item
-                            label="Name"
-                            name="name"
-                        >
-                            <Input />
-                        </Form.Item>
+                        <div style={{ marginBottom: 15 }}>
+                            <label>Họ tên:</label>
+                            <Input name="name" placeholder="Nhập họ và tên" />
+                        </div>
 
-                        <Form.Item
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={isPending}
+                            disabled={isPending}
+                            block
                         >
-                            <Button type="primary" htmlType="submit">
-                                Submit
-                            </Button>
-                        </Form.Item>
-                    </Form>
+                            Đăng ký
+                        </Button>
+                    </form>
                     <Link href={"/"}><ArrowLeftOutlined /> Quay lại trang chủ</Link>
                     <Divider />
                     <div style={{ textAlign: "center" }}>

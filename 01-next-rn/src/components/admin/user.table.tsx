@@ -1,11 +1,12 @@
 'use client'
 import { handleDeleteUserAction } from "@/utils/actions";
 import { DeleteTwoTone, EditTwoTone } from "@ant-design/icons";
-import { Button, Popconfirm, Table } from "antd"
+import { Button, Popconfirm, Skeleton, Table } from "antd"
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from "react";
 import UserCreate from "./user.create";
 import UserUpdate from "./user.update";
+import { useHasMounted } from "@/utils/customHook";
 
 
 interface IProps {
@@ -26,6 +27,7 @@ const UserTable = (props: IProps) => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [dataUpdate, setDataUpdate] = useState<any>(null);
+    const hasMounted = useHasMounted();
 
     const columns = [
         {
@@ -85,14 +87,16 @@ const UserTable = (props: IProps) => {
         }
     };
 
-
+    if (!hasMounted) {
+        return (
+            <div style={{ padding: "20px" }}>
+                <Skeleton active paragraph={{ rows: 10 }} />
+            </div>
+        );
+    }
     return (
         <>
-            <div style={{
-                display: "flex", justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 20
-            }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
                 <span>Manager Users</span>
                 <Button onClick={() => setIsCreateModalOpen(true)}>Create User</Button>
             </div>
@@ -101,15 +105,12 @@ const UserTable = (props: IProps) => {
                 dataSource={users}
                 columns={columns}
                 rowKey={"_id"}
-                pagination={
-                    {
-                        current: meta.current,
-                        pageSize: meta.pageSize,
-                        showSizeChanger: true,
-                        total: meta.total,
-                        showTotal: (total, range) => { return (<div> {range[0]}-{range[1]} trên {total} rows</div>) }
-                    }
-                }
+                pagination={{
+                    current: meta.current,
+                    pageSize: meta.pageSize,
+                    total: meta.total,
+                    showTotal: (total, range) => `${range[0]}-${range[1]} trên ${total} rows`
+                }}
                 onChange={onChange}
             />
 

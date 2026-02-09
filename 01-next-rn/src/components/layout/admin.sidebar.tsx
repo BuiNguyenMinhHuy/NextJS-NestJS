@@ -12,15 +12,40 @@ import {
     PlusSquareOutlined
 
 } from '@ant-design/icons';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AdminContext } from "@/library/admin.context";
-import type { MenuProps } from 'antd';
+import { Skeleton, type MenuProps } from 'antd';
 import Link from 'next/link'
+import { usePathname } from "next/navigation";
+import { useHasMounted } from "@/utils/customHook";
 
 type MenuItem = Required<MenuProps>['items'][number];
 const AdminSideBar = () => {
     const { Sider } = Layout;
     const { collapseMenu } = useContext(AdminContext)!;
+    const pathname = usePathname();
+    const hasMounted = useHasMounted();
+
+
+    const getSelectedKey = (path: string) => {
+        if (path.includes('/dashboard/user')) return 'users';
+        if (path.includes('/dashboard/restaurant')) return 'restaurants';
+        if (path.includes('/dashboard/menu-item-options')) return 'menu-item-options';
+        if (path.includes('/dashboard/menu')) return 'menus';
+        if (path.includes('/dashboard/product')) return 'menu-items';
+        if (path === '/dashboard') return 'dashboard';
+        return '';
+    };
+    const currentKey = getSelectedKey(pathname);
+
+    if (!hasMounted) {
+        return (
+            <Sider collapsed={collapseMenu}>
+                <div style={{ padding: '16px', fontWeight: 'bold', textAlign: 'center' }}>WEB DEMO</div>
+                <div style={{ height: '100vh', background: '#fff' }}></div>
+            </Sider>
+        );
+    }
 
     const items: MenuItem[] = [
 
@@ -133,7 +158,7 @@ const AdminSideBar = () => {
 
             <Menu
                 mode="inline"
-                defaultSelectedKeys={['dashboard']}
+                selectedKeys={[currentKey]}
                 items={items}
                 style={{ height: '100vh' }}
             />
@@ -141,4 +166,4 @@ const AdminSideBar = () => {
     )
 }
 
-export default AdminSideBar;
+export default AdminSideBar;    

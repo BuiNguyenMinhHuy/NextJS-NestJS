@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { MenusService } from './menus.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
+import { Public, ResponseMessage } from '@/decorator/customize';
 
 @Controller('menus')
 export class MenusController {
@@ -13,6 +14,7 @@ export class MenusController {
   }
 
   @Get()
+  @Public()
   async findAll(
     @Query() query: string,
     @Query("current") current: string,
@@ -24,7 +26,8 @@ export class MenusController {
 
 
 
-  @Patch()
+  @Patch(':id')
+  @ResponseMessage("Cập nhật menu thành công")
   update(@Param('id') id: string, @Body() updateMenuDto: UpdateMenuDto) {
     return this.menusService.update(updateMenuDto);
   }

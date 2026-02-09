@@ -1,38 +1,35 @@
 import { auth } from "@/auth";
-import RestaurantTable from "@/components/admin/restaurant.table";
+import OrderHistory from "@/components/layout/client/order.history";
 import { sendRequest } from "@/utils/api";
+
 
 interface IProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const ManageRestaurantPage = async (props: IProps) => {
+const MyOrdersPage = async (props: IProps) => {
     const searchParams = await props.searchParams;
 
     const current = searchParams?.current ?? 1;
     const pageSize = searchParams?.pageSize ?? 10;
     const session = await auth();
 
+    // Gọi API lấy danh sách đơn hàng của User
     const res = await sendRequest<IBackendRes<any>>({
-        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/restaurants`,
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders`,
         method: "GET",
         queryParams: { current, pageSize },
-        headers: {
-            Authorization: `Bearer ${session?.user?.access_token}`,
-        },
-        nextOption: {
-            next: { tags: ['list-restaurants'] } // Tag để revalidate dữ liệu
-        }
-    })
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+    });
 
     return (
-        <div>
-            <RestaurantTable
-                restaurants={res?.data?.results ?? []}
+        <div style={{ padding: "40px 100px", minHeight: "80vh" }}>
+            <OrderHistory
+                orders={res?.data?.results ?? []}
                 meta={res?.data?.meta}
             />
         </div>
-    )
+    );
 }
 
-export default ManageRestaurantPage;
+export default MyOrdersPage;

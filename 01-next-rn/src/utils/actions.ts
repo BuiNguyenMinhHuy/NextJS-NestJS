@@ -3,6 +3,7 @@
 import { auth, signIn } from "@/auth";
 import { revalidateTag } from 'next/cache'
 import { sendRequest } from "./api";
+import { cookies } from "next/headers";
 
 
 export async function authenticate(username: string, password: string) {
@@ -13,28 +14,41 @@ export async function authenticate(username: string, password: string) {
             // callbackUrl: "/",
             redirect: false,
         })
-        console.log(">>> check r: ", r)
-        return r;
-    } catch (error) {
-        if ((error as any).name === "InvalidEmailPasswordError") {
-            return {
-                error: (error as any).type,
-                code: 1
-            }
+        return { success: true };
 
-        } else if ((error as any).name === "InactiveAccountError") {
-            return {
-                error: (error as any).type,
-                code: 2
-            }
-        } else {
-            return {
-                error: "Internal server error",
-                code: 0
-            }
+    } catch (error) {
+        const errorType = (error as any).name;
+
+        if (errorType === "InvalidEmailPasswordError") {
+            return { error: (error as any).type, code: 1 };
         }
 
+        if (errorType === "InactiveAccountError") {
+            // Khi tài khoản chưa kích hoạt, gọi thêm API để lấy _id từ email
+            const res = await sendRequest<IBackendRes<any>>({
+                url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/retry-active`,
+                method: "POST",
+                body: { email: username }
+            });
+
+            return {
+                error: (error as any).type,
+                code: 2,
+                _id: res?.data?._id
+            };
+        }
+
+        return { error: "Internal server error", code: 0 };
     }
+}
+
+export const handleRegisterAction = async (data: any) => {
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/register`,
+        method: "POST",
+        body: { ...data }
+    })
+    return res;
 }
 
 export const handleCreateUserAction = async (data: any) => {
@@ -42,14 +56,13 @@ export const handleCreateUserAction = async (data: any) => {
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users`,
         method: "POST",
-        headers: {
-            Authorization: `Bearer ${session?.user?.access_token}`,
-        },
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
         body: { ...data }
     })
     revalidateTag("list-users")
     return res;
 }
+
 
 export const handleUpdateUserAction = async (data: any) => {
     const session = await auth();
@@ -90,12 +103,12 @@ export const handleCreateRestaurantAction = async (data: any) => {
     revalidateTag("list-restaurants");
     return res;
 }
-// src/utils/actions.ts
+
 export const handleUpdateRestaurantAction = async (data: any) => {
     const session = await auth();
     const res = await sendRequest<IBackendRes<any>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/restaurants`,
-        method: "PATCH", // ĐỔI TỪ POST THÀNH PATCH
+        method: "PATCH",
         headers: { Authorization: `Bearer ${session?.user?.access_token}` },
         body: { ...data }
     })
@@ -218,4 +231,48 @@ export const handleDeleteMenuItemOptionAction = async (id: any) => {
     })
     revalidateTag("list-menu-item-options");
     return res;
+}
+
+
+export const handleUpdateProfileAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users`,
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        body: { ...data }
+    })
+    revalidateTag("list-users") // Làm mới dữ liệu người dùng
+    return res;
+}
+
+export const handleChangePasswordAction = async (data: any) => {
+    const session = await auth();
+    const res = await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/change-password`,
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${session?.user?.access_token}`,
+        },
+        body: { ...data }
+    })
+    return res;
+}
+
+export const handlePlaceOrderAction = async (data: any): Promise<IBackendRes<any>> => {
+    const session = await auth();
+    if (!session) return {
+        statusCode: 401,
+        message: "Vui lòng đăng nhập để đặt hàng",
+        data: null // Luôn trả về thuộc tính data để tránh lỗi TS ở Client
+    };
+
+    return await sendRequest<IBackendRes<any>>({
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/orders`,
+        method: "POST",
+        headers: { Authorization: `Bearer ${session?.user?.access_token}` },
+        body: { ...data }
+    });
 }

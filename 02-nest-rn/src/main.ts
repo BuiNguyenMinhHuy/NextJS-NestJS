@@ -4,7 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
   app.setGlobalPrefix('api/v1', { exclude: [''] });

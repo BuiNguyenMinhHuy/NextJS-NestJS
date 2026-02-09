@@ -3,13 +3,14 @@ import UserTable from "@/components/admin/user.table";
 import { sendRequest } from "@/utils/api";
 
 interface IProps {
-    params: { id: string }
-    searchParams: { [key: string]: string | string[] | undefined }
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 const ManageUserPage = async (props: IProps) => {
+    const searchParams = await props.searchParams;
 
-    const current = props?.searchParams?.current ?? 1;
-    const pageSize = props?.searchParams?.pageSize ?? 10;
+    const current = searchParams?.current ?? 1;
+    const pageSize = searchParams?.pageSize ?? 10;
     const session = await auth();
 
     const res = await sendRequest<IBackendRes<any>>({

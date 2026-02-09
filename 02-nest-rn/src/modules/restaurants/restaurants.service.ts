@@ -54,4 +54,11 @@ export class RestaurantsService {
     }
     throw new BadRequestException("Id không đúng định dạng");
   }
+
+  async findOne(_id: string) {
+    if (mongoose.isValidObjectId(_id)) {
+      return await this.restaurantModel.findById(_id);
+    }
+    throw new BadRequestException("Id không đúng định dạng");
+  }
 }

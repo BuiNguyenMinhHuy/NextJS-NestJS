@@ -32,4 +32,10 @@ export class RestaurantsController {
   remove(@Param('id') id: string) {
     return this.restaurantsService.remove(id);
   }
+
+  @Get(':id')
+  @Public() // Cho phép xem chi tiết nhà hàng mà không cần đăng nhập
+  findOne(@Param('id') id: string) {
+    return this.restaurantsService.findOne(id);
+  }
 }

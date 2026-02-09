@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { authenticate } from '@/utils/actions';
 import { useRouter } from 'next/navigation';
 import ModalReactive from './modal.reactive';
-import { useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import ModalChangePassword from './modal.change.password';
 
 const Login = () => {
@@ -15,29 +15,51 @@ const Login = () => {
 
     const [changePassword, setChangePassword] = useState(false);
 
-    const onFinish = async (values: any) => {
-        const { username, password } = values;
-        setUserEmail("");
-        //trigger sign-in
+    const [state, formAction, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+        const username = formData.get('username') as string;
+        const password = formData.get('password') as string;
+
         const res = await authenticate(username, password);
 
         if (res?.error) {
-            //error
-            if (res?.code === 2) {
-                setIsModalOpen(true);
-                setUserEmail(username);
-                return;
-            }
-            notification.error({
-                message: "Error login",
-                description: res?.error
-            })
-
-        } else {
-            //redirect to /dashboard
-            router.push('/dashboard');
+            return { error: res.error, code: res.code, username, _id: res?._id };
         }
-    };
+        if (res?.success) {
+            return { success: true };
+        }
+        return null;
+    }, null);
+
+    useEffect(() => {
+        if (state?.success) {
+            notification.success({
+                title: "Đăng nhập thành công",
+                description: "Chào mừng bạn đã quay trở lại!"
+            });
+            router.push("/");
+            router.refresh();
+        }
+
+        if (state?.error) {
+            // Trường hợp tài khoản chưa kích hoạt (code 2)
+            if (state?.code === 2) {
+                notification.warning({
+                    title: "Thông báo kích hoạt",
+                    description: state.error // "Tài khoản chưa được kích hoạt"
+                });
+                // Tự động nhảy sang trang verify với _id nhận được từ action
+                if (state?._id) {
+                    router.push(`/verify/${state._id}`);
+                }
+            } else {
+                // Các lỗi đăng nhập thông thường khác
+                notification.error({
+                    title: "Lỗi đăng nhập",
+                    description: state.error
+                });
+            }
+        }
+    }, [state]);
 
     return (
         <>
@@ -50,54 +72,41 @@ const Login = () => {
                         borderRadius: "5px"
                     }}>
                         <legend>Đăng Nhập</legend>
-                        <Form
-                            name="basic"
-                            onFinish={onFinish}
-                            autoComplete="off"
-                            layout='vertical'
-                        >
-                            <Form.Item
-                                label="Email"
-                                name="username"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please input your email!',
-                                    },
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
+                        <form action={formAction}>
+                            <div style={{ marginBottom: 15 }}>
+                                <label>Email:</label>
+                                <Input name="username" required />
+                            </div>
+                            <div style={{ marginBottom: 15 }}>
+                                <label>Password:</label>
+                                <Input.Password name="password" required />
+                            </div>
 
-                            <Form.Item
-                                label="Password"
-                                name="password"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please input your password!',
-                                    },
-                                ]}
-                            >
-                                <Input.Password />
-                            </Form.Item>
+                            {/* Thêm div này để căn chỉnh nút Login và Quên mật khẩu */}
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginBottom: 15
+                            }}>
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    loading={isPending}
+                                    disabled={isPending}
+                                >
+                                    Login
+                                </Button>
 
-
-
-                            <Form.Item
-                            >
-                                <div style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center"
-                                }}>
-                                    <Button type="primary" htmlType="submit">
-                                        Login
-                                    </Button>
-                                    <Button type='link' onClick={() => setChangePassword(true)}>Quên mật khẩu ?</Button>
-                                </div>
-                            </Form.Item>
-                        </Form>
+                                {/* Nút Quên mật khẩu kích hoạt state setChangePassword */}
+                                <span
+                                    onClick={() => setChangePassword(true)}
+                                    style={{ cursor: "pointer", color: "#1890ff" }}
+                                >
+                                    Quên mật khẩu?
+                                </span>
+                            </div>
+                        </form>
                         <Link href={"/"}><ArrowLeftOutlined /> Quay lại trang chủ</Link>
                         <Divider />
                         <div style={{ textAlign: "center" }}>

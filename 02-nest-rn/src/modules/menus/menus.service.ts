@@ -15,7 +15,7 @@ export class MenusService {
   ) { }
 
   async create(createMenuDto: CreateMenuDto) {
-    return await this.menuModel.create({ ...createMenuDto });
+    return await this.menuModel.create({ ...createMenuDto as any });
   }
 
   async findAll(query: any, current: number, pageSize: number) {

@@ -38,7 +38,7 @@ const ModalReactive = (props: any) => {
             setCurrent(1);
         } else {
             notification.error({
-                message: "Call APIs error",
+                title: "Call APIs error",
                 description: res?.message
             })
         }
@@ -59,7 +59,7 @@ const ModalReactive = (props: any) => {
             setCurrent(2);
         } else {
             notification.error({
-                message: "Call APIs error",
+                title: "Call APIs error",
                 description: res?.message
             })
         }

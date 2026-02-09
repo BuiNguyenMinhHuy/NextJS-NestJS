@@ -3,27 +3,31 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": ">=22.19.0"
+  },
   "dependencies": {
-    "@ant-design/icons": "5.4.0",
+    "@ant-design/cssinjs": "^2.0.3",
+    "@ant-design/icons": "^6.1.0",
     "@ant-design/nextjs-registry": "1.0.0",
-    "antd": "5.19.3",
-    "next": "14.2.5",
-    "next-auth": "5.0.0-beta.20",
+    "antd": "^6.2.3",
+    "next": "^15.5.12",
+    "next-auth": "^5.0.0-beta.30",
     "query-string": "9.1.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@types/node": "20.14.12",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
+    "@types/node": "^25.2.2",
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
     "eslint": "8.57.0",
-    "eslint-config-next": "14.2.5",
-    "typescript": "5.5.4"
+    "eslint-config-next": "^16.1.6",
+    "typescript": "^5.9.3"
   }
 }

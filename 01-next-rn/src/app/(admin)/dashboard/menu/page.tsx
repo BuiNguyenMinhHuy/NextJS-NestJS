@@ -3,12 +3,14 @@ import MenuTable from "@/components/admin/menu.table";
 import { sendRequest } from "@/utils/api";
 
 interface IProps {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 const ManageMenuPage = async (props: IProps) => {
-    const current = props?.searchParams?.current ?? 1;
-    const pageSize = props?.searchParams?.pageSize ?? 10;
+    const searchParams = await props.searchParams;
+
+    const current = searchParams?.current ?? 1;
+    const pageSize = searchParams?.pageSize ?? 10;
     const session = await auth();
 
     const [resMenu, resRestaurant] = await Promise.all([
